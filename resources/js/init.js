@@ -54,6 +54,7 @@ button.on("click", function (){
         `);
 
         entrada.val("");
+        entrada.focus();
 
     }else{
         //por si añade un campo vacio

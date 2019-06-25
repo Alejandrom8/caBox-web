@@ -101,9 +101,20 @@
                             <div class="margin">
                                 <img id="QR" class="img-fluid float-left" alt="Codigo QR" src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=<?php echo constant("URL") . "api/caja/" . $this->box->id; ?>">
                                 <p class="no-print">
-                                    Este es el codigo qr de tu caja, imprimelo y pegalo en ella
+                                    Este es el codigo qr de tu caja, imprimelo y pegalo en ella.
                                 <p>
-                                <button id="imprimir" class="btn btn-info btn-block no-print" onclick="window.print()">Imprimir</button>
+                                <div class="form-group">
+                                    <label for="cuantosQR">¿Cuántos quieres imprimir?</label>
+                                    <input type="number" id="cuantosQR" name="cuantosQR" class="form-control" 
+                                    value="1" min="1" max="100" pattern="^[0-9]+">
+                                </div>
+                                <div class="form-group">
+                                    <button id="imprimir" class="btn btn-info btn-block no-print"
+                                    target="_blank" data-href="<?php echo constant("URL") . "init/print/"; ?>"
+                                    data-id = "<?php echo $this->box->id; ?>">
+                                        Imprimir
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -156,6 +167,21 @@
         $("#delete").on("click", function(){
             if(confirm("Seguro de que quieres borrar esta caja?")){
                 window.location = "<?php echo constant("URL") . "api/delete/" . $this->box->id; ?>";
+            }
+        });
+        $("#imprimir").on("click", function(){
+            let cuantos = $("#cuantosQR").val();
+            if(cuantos > 0 && cuantos <= 100){
+                const href = this.dataset.href;
+                const id = this.dataset.id;
+                let totalId = "";
+                for(let i = 0; i < cuantos; i++){
+                    totalId += i == 0 ? id : "," + id;
+                }
+                let where = href + totalId;
+                window.open(where);
+            }else{
+                alert("Seleccione una cantidad valida (1-100)");
             }
         });
     </script>

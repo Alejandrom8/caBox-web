@@ -50,6 +50,8 @@ class initModel extends Model{
                 $sql .= " caja LIKE '%$palabras%' OR titulo LIKE '%$palabras%' OR objetos LIKE '%$palabras%'";
             }
 
+            $sql .= " ORDER BY usuario ASC";
+
             $e = $this->con->prepare($sql);
             $e->execute();
 
@@ -115,6 +117,19 @@ class initModel extends Model{
             $res->errors = $e;
         }finally{
             return $res;
+        }
+    }
+
+    public function searchTitle($id){
+        try{
+            $sql = "SELECT titulo FROM cajas WHERE caja = :id LIMIT 1";
+            $e = $this->con->prepare($sql);
+            $e->bindParam(":id", $id);
+            $e->execute();
+            $data = $e->fetch(PDO::FETCH_ASSOC);
+            return $data["titulo"];
+        }catch(PDOException $e){
+            return null;
         }
     }
 }

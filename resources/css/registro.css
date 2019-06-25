@@ -7,6 +7,9 @@
     src: url(../fonts/openSans/OpenSans-Regular.ttf);
     font-family: "OpenSans";
 }
+ul li{
+    list-style: none;
+}
 *{
     margin:0;
     padding:0;
@@ -40,9 +43,11 @@ header div img{
     padding:0;
 }
 .window{
-    width:95%;
+    width:96%;
+    height:auto;
     margin:2%;
     margin-top:4%;
+    padding:4%;
     background-color:#fff;
     -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 9px 0px;
     -moz-box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 9px 0px;
@@ -57,8 +62,9 @@ header div img{
     width:100%;
 }
 #displayResults{
-    max-height:80vh;
+    max-height:90vh;
     overflow-y:scroll;
+    font-size:0.9rem;
 }
 
 .windowFloatBlur{
@@ -66,24 +72,83 @@ header div img{
     z-index:11;
     width:100%;
     height:100%;
-    display:flex;
-    align-items:center;
-    background-color:rgba(199, 199, 199, 0.7);
+    /* background-color:rgba(199, 199, 199, 0.7); */
 }
 
-.alertOptions{
-    margin:0 auto;
-    width:95%;
-    height:auto;
+.alertOptions.window{
+    width:200px;
     background-color:#fff;   
     position:absolute;
-    left:2.5%;
     z-index: 12;
+    margin:0;
+    padding:0;
+    font-family:'OpenSans';
+    text-transform:lowercase;
 }
 
 @media screen and (min-width: 800px){
-    .alertOptions{
-        width:50%;
-        left:25%;
+    .alertOptions.window{
+        width:20vw;
     }
+}
+.printOptions{
+    font-family:"OpenSans";
+    font-size:0.9rem;
+    text-align:center;
+}
+.boxButton{
+    width:130px;
+    height:110px;
+    /* border:1px solid #eee; */
+    margin:1px;
+    border-collapse: collapse;
+    float:left;
+    text-align:center;
+    display:flex;
+    align-items:center;
+    align-content:center;
+    padding:1%;
+    color:#fff;
+    cursor:pointer;
+}
+.boxButton p{
+    margin:0 auto;
+}
+.boxButton:hover{
+    background-color:#333;
+    color:#eee;
+}
+.azul{
+    background:#0F5AF2;
+}
+.morado{
+    background:#971CC2;
+}
+.amarillo{
+    background:#F3D85C;
+    color:#333;
+}
+.cyan{
+    background:#0CDBF2;
+}
+.negro{
+    background:#08000B;
+}
+.cajaColumn:hover{
+    background-color:#dee2e6;
+}
+
+#deleatSelection{
+    position:absolute;
+    top:0;
+    right:0;
+}
+.caja{
+    cursor:pointer;
+}
+#adminOptions .window{
+    /*no sirve*/
+    height:50%;
+    max-height:46vh;
+    min-height:45vh;
 }
