@@ -1,4 +1,7 @@
 <?php
+
+require_once("app/controllers/debug.php");
+
 class App {
   public function __construct(){
     $url = isset($_GET['url']) ? $_GET['url'] : null;
@@ -33,14 +36,14 @@ class App {
               $page->{$url[1]}();
             }
           }else{
-            $page = new ManageError();
+            $page = new Debug("No existe la funcion que intenta realizar");
           }
         }else{
           $page->render();
         }
         
       }else{
-        $page = new ManageError();
+        $page = new Debug("La pagina a la que intenta entrar no existe");
       }
     }
   }//fin del constructor

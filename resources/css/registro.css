@@ -62,7 +62,7 @@ header div img{
     width:100%;
 }
 #displayResults{
-    max-height:90vh;
+    max-height:150vh;
     overflow-y:scroll;
     font-size:0.9rem;
 }
@@ -115,8 +115,10 @@ header div img{
     margin:0 auto;
 }
 .boxButton:hover{
-    background-color:#333;
-    color:#eee;
+    background-color:#e0dd22;
+    color:#333;
+    font-weight:bold;
+    box-shadow:rgba(0, 0, 0, 0.2) 0px 3px 9px 0px;
 }
 .azul{
     background:#0F5AF2;
@@ -128,8 +130,8 @@ header div img{
     background:#F3D85C;
     color:#333;
 }
-.cyan{
-    background:#0CDBF2;
+.verde{
+    background:#8ac926;
 }
 .negro{
     background:#08000B;
@@ -148,7 +150,16 @@ header div img{
 }
 #adminOptions .window{
     /*no sirve*/
-    height:50%;
-    max-height:46vh;
-    min-height:45vh;
+    max-height:50vh;
+}
+#selectWindow{
+    background:#0F5AF2;
+    color:#fff;
+}
+.displaySelection{
+    overflow-y:scroll;
+    max-height:40vh;
+}
+#selectWindow table tr td{
+    color:#fff;
 }

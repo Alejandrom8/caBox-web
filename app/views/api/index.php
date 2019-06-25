@@ -30,6 +30,24 @@
                 height:250px;
             }
         }
+        header{
+            padding:3%;
+            font-family:"OpenSans bold";
+            font-size:3rem;
+            color:#333;
+            display:flex;
+            align-content:center;
+            justify-content:space-around;
+        }
+        header div h1{
+            float:left;
+            line-height:5rem;
+        }
+        header div img{
+            width:100px;
+            height:80px;
+            float:left;
+        }
     </style>
     <script>
         let itemsText = "<?php echo $this->box->content; ?>";
@@ -38,6 +56,12 @@
     </script>
 </head>
 <body>
+    <header class="col-md-12">
+            <div>
+                <h1>CucaBox</h1>
+                <img src="<?php echo constant("URL"); ?>resources/img/logo.png">
+            </div>
+    </header>
     <div id="display">
         <?php 
             if(isset($this->box) and $this->box != ""){   
@@ -169,6 +193,7 @@
                 window.location = "<?php echo constant("URL") . "api/delete/" . $this->box->id; ?>";
             }
         });
+
         $("#imprimir").on("click", function(){
             let cuantos = $("#cuantosQR").val();
             if(cuantos > 0 && cuantos <= 100){

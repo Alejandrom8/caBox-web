@@ -83,9 +83,9 @@
                 </div>
             </div>
         </div><!-- fin de create section -->
-        <div id="admin" class="bloque" style="height:110vh;">
+        <div id="admin" class="bloque" style="max-height:170vh;">
             <div class="row">
-                <div class="col-md-4 row">
+                <div class="col-md-4 row" id="adminOptions" style="max-height:170vh;">
                     <div class="col-md-12 window">
                         <div class="margin">
                             <form class="form" action="<?php echo constant("URL"); ?>init/search" method="GET" id="B">
@@ -119,15 +119,16 @@
                                 <div class="boxButton amarillo" onclick="sendToPrintViewBoxes()">
                                     <p>Las cajas en pantalla</p>
                                 </div>
-                                <div class="boxButton morado btn-disabled" disabled="disabled">
-                                    <p>Cajas seleccionadas <span style="color:tomato;">(proximamente...)</span></p>
+                                <div class="boxButton morado btn-disabled" disabled="disabled" onclick="sendToPrintSelectedBoxes()">
+                                    <p>Las cajas seleccionadas</p>
                                 </div>
-                                <p class="text-justify float-right">
+                                <p class="text-justify float-right" style="padding:4%;">
                                     Da click en alguna caja, aparecera un menú contextual con algunas opciones, da click en
                                     seleccionar para añadir la caja a la selección.
                                 </p>
                         </div>
                     </div>
+                    <div id="Seleccionado" class="row col-md-12"></div>
                 </div>
                 <div class="col-md-8" style="margin:0;padding:0;">
                     <div class="window col-md-12" style="width:96%;margin:2%;">
@@ -139,7 +140,6 @@
                             <input type="hidden" name="cajas" id="cajas">
                         </div>
                     </div>
-                    <div id="Seleccionado"></div>
                 </div>
             </div>
         </div>
@@ -168,18 +168,21 @@
     </div>
     <script>
         let usuarios = ["JARU","MOM","YUNI","ALEX","DANI","MIGUE","LASKA"];
-        let URL = "http://127.0.0.1/mudanza/";
+        let URL = "<?php echo constant("URL");?>";
     </script>
     <script>
         const button = $("#ObjectAdded");
         const arrayValue = $("#obj");//array escondido que contiene los objetos enlistados
         const display = $("#boxContent");//display de la caja
+
         const separador = ",";
         const entrada = $("#add");
         const resultados = $("#displayResults");
         const arrayPrint = $("#cajas");
+    </script>
+    <script src="<?php echo constant("URL");?>resources/js/init.js"></script>
+    <script>
         let totalCajas = 0, totalObjetos = 0;
-
         const addResultStatistic = async user => {
             await $.ajax({
                 url: `${URL}init/countBoxes`,
@@ -255,27 +258,30 @@
         const addToSelection = (i, owner, title, id) => {
             if(!$("#Seleccionado").html()){
                 $("#Seleccionado").append(`
-                    <div class="window col" id="selectWindow">
+                    <div class="window col-md-12" id="selectWindow" style="max-height:70vh;">
                         <button id="deleatSelection" 
                         class="btn btn-danger btn-sm" 
-                        onclick="$('#selectWindow').remove();" style="margin:4px;">x</button>
+                        onclick="$('#Seleccionado').empty();$('#selection').val('');" style="margin:4px;">x</button>
                         <div class="margin" style="margin:0;padding:0;">
                             <h4>Cajas Seleccionadas</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-dark" id="displaySeleccionado"></table>
+                            <div class="table-responsive displaySelection">
+                                <table class="table table-bordered table-striped" id="displaySelection"></table>
                             </div>
-                            <input type="hidden" name="cajasSeleccionadas" id="cajasSeleccionadas">
+                            <button class="btn btn-secondary" id="deleatALotOfBoxes">Borrar cajas</button>
+                            <input type="hidden" name="selection" id="selection">
                         </div>
                     </div>
                 `);
+                $("#selectWindow").focus();
             }
-            $("#displaySeleccionado").append(`
+            $("#displaySelection").append(`
                 <tr>
                     <td>${i}.</td>
                     <td>${owner}</td>
                     <td>${title}</td>
                 </tr>
             `);
+            addNewItem(id, $("#selection"));
             removerBlur();
         };
 
@@ -321,6 +327,12 @@
                     </div>
                 </div>
             `);
+
+            $("#deleatALotOfBoxes").on("click", function(){
+                if(confirm("Esta seguro de que desea borrar todas estas cajas?")){
+                    window.location = `${URL}api/delete/` + $("#selection").val();
+                }
+            });
 
             $(document).mouseup(function(e) {
                 let container = $(".alertOptions");
@@ -423,18 +435,30 @@
 
         const sendToPrintViewBoxes = () =>{
             let allid = arrayPrint.val();
-            if(allid == "" || allid == null){
-                alert("No hay cajas en pantalla, realize una busqueda primero");
-            }else{
-                // if(navigator.offline){
+            if(allid != "" && allid != null){
+                 // if(navigator.offline){
                 //     alert("En este momento no tiene conexión a internet la cual es necesaria para efetcuar esta acción");
                 // }else{
                     window.open(URL + "init/print/" + allid);
                 // }
+            }else{
+                alert("No hay cajas en pantalla, realize una busqueda primero");
+            }
+        };
+
+        const sendToPrintSelectedBoxes = () => {
+            if($("#selection").length){
+                let allid = $("#selection").val();
+                if(allid != "" && allid != null){
+                    window.open(URL + "init/print/" + allid);
+                }else{
+                    alert("No ha seleccionado ninguna caja aún");
+                }
+            }else{
+                alert("No ha seleccionado ninguna caja aún");
             }
         };
 
     </script>
-    <script src="<?php echo constant("URL");?>resources/js/init.js"></script>
 </body>
 </html>

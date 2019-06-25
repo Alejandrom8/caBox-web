@@ -146,7 +146,6 @@ class Init extends Controller{
     $this->view->cajas = ["id" => $cajas, "title" => $titles];
     $this->pdf();
   }
-  
 }
 
 ?>

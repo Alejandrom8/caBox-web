@@ -1,6 +1,6 @@
 <?php
 
-define("URL", "http://127.0.0.1/mudanza/");
+define("URL", "http://192.168.1.66/mudanza/");
 
 define("USER", "root");
 define("HOST", "localhost");

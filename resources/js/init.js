@@ -27,39 +27,52 @@ const borrarItem = id => {
             return tapon += index == 0 ? current : separador + current;
         });
         //Se actualiza el valor del input hidden
-        console.log(newItems);
         arrayValue.val(newItems);
     }else{
         display.empty();
+        arrayValue.val("");
     }
 };
 
-button.on("click", function (){
+const addNewItem = (input,array,disp = null) => {
+    /*
+        @param input , texto de los objetos introducidos.
+        @param array , id jquery del input hidden donde se almacenara la 
+        lista a enviar de objetos en la caja.
+        @param disp , id de la div donde se imprimiran los datos añadidos.
+    */
+    const objetos = input.split(separador);//valor del input donde se introducen objetos
 
-    const objeto = entrada.val();//valor del input donde se introducen objetos
+    if(objetos.length > 0){
 
-    if(objeto != ""){
+        for(let i = 0; i < objetos.length; i++){
+            let insert = array.val() == "" ? objetos[i] : separador + objetos[i];
+                insert = array.val() + insert;
+            array.val(insert);
 
-        let insert = arrayValue.val() == "" ? objeto : separador + objeto;
-            insert = arrayValue.val() + insert;
-        arrayValue.val(insert);
+            if(disp != null){
 
-        let num_objetos = insert.split(separador).length;
-
-        display.append(`
-            <tr class="item" data-item="${objeto}" data-id="${num_objetos}">
-                <td>${num_objetos}</td>
-                <td>${objeto}</td>
-            </tr>
-        `);
-
-        entrada.val("");
-        entrada.focus();
+                let num_objetos = insert.split(separador).length;
+                
+                disp.append(`
+                    <tr class="item" data-item="${objetos[i]}" data-id="${num_objetos}">
+                        <td>${num_objetos}</td>
+                        <td>${objetos[i]}</td>
+                    </tr>
+                `);
+            }
+        }
 
     }else{
         //por si añade un campo vacio
         console.log("El campo esta vacio");
     }
+};
+
+button.on("click", function (){
+    addNewItem(entrada.val(), arrayValue, display);
+    entrada.val("");
+    entrada.focus();
 });
 
 display.on("click", ".item", function(){

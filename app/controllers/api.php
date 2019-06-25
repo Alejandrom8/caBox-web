@@ -62,7 +62,12 @@ class Api extends Controller{
 
     public function delete($param){
         $id = $param[0];
-        $res = $this->model->borrar($id);
+        $id = explode(",", $id);
+        // var_dump($id);
+        // die();
+        foreach($id as $box){
+            $res = $this->model->borrar($box);
+        }
         if($res[0]){
             header("Location: " . constant("URL"));
         }else{
