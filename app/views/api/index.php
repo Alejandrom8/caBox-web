@@ -50,9 +50,7 @@
         }
     </style>
     <script>
-        let itemsText = "<?php echo $this->box->content; ?>";
-        let items = itemsText.split(",");
-        console.log(items);
+        let items = '<?php echo $this->box->content; ?>';
     </script>
 </head>
 <body>
@@ -163,30 +161,36 @@
                     </div>
                 </div>
             </div>
+    <script src="<?php echo constant("URL");?>resources/js/init.js"></script>
     <script>
         const button = $("#ObjectAdded");
         const arrayValue = $("#obj");//array escondido que contiene los objetos enlistados
         const display = $("#display_objects");//display de la caja
-        const separador = ",";
         const entrada = $("#add");
 
-        let cont = 1;
-        items.forEach( item => {
-            display.append(`
-                <tr class="item" data-id="${cont}" data-item="${item}">
-                    <td>${cont}</td>
-                    <td>${item}</td>
-                </tr>
-            `);
-            cont++;
-        });
+        const magicBox = new MagicBox(button, display, arrayValue, entrada);
+
+        magicBox.addNewItem(items);
 
         if (performance.navigation.type == 1) {
             arrayValue.val("");
-            arrayValue.val(itemsText);
+            arrayValue.val(items);
         }else{
-            arrayValue.val(itemsText);
+            arrayValue.val(items);
         }
+
+        button.on("click", function (){ magicBox.click(); });
+
+        display.on("click", ".item", function(){
+            //posible error al tratar de usar this dentro de este contexto :'(
+            const text = this.dataset.item;
+            const conf = confirm("Quieres borrar \"" + text + "\" de tu lista?");
+
+            if(conf){
+                const id = parseInt(this.dataset.id) - 1;
+                magicBox.deleteItem(id);//should be 'this' of the object MagicBox
+            }
+        });
 
         $("#delete").on("click", function(){
             if(confirm("Seguro de que quieres borrar esta caja?")){
@@ -210,7 +214,6 @@
             }
         });
     </script>
-    <script src="<?php echo constant("URL");?>resources/js/init.js"></script>
         <?php 
             }
         ?>

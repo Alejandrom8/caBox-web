@@ -1,89 +1,143 @@
-const printTable = items => {
-    display.empty();
 
-    let cont = 1;
+class MagicBox {
 
-    items.forEach( item => {
-        display.append(`
-            <tr class="item" data-id="${cont}" data-item="${item}">
-                <td>${cont}</td>
-                <td>${item}</td>
-            </tr>
-        `);
-        cont++;
-    });
-};
+    /**
+     * @param { jquery Object } button the button that will gonna trigger the add-object event.
+     * @param { jquery Object } display the place where the objects-inside-box is going to be displayed.
+     * @param { jquery Object } arrayValue the input-hidden that will gonna store the objects in string format.
+     * @param { jquery Object } input where are the objects going to be taken.
+     * @param { string } separator the separator of the object-list.
+     */
 
-const borrarItem = id => {
-    //items del input tipo hidden en forma de array
-    const items = arrayValue.val().split(",");
-    items.splice(id, 1);//borrando el elemento indicado
-    console.log(items);
-    if(items.length > 0){
-        //si aun quedan elementos, se reconstruye la tabla con los elementos que quedan
-        printTable(items);
+    constructor (button, display, arrayValue, input, separator = ",") {
 
-        const newItems = items.reduce( (tapon,current,index) =>{
-            return tapon += index == 0 ? current : separador + current;
+        this._button = button;
+        this._display = display;
+        this._arrayValue = arrayValue;
+        this._input = input;
+        this._separator = separator;
+
+        //items del input tipo hidden en forma de array
+        // this._items = (this._arrayValue.val()).split(this._separator);
+    }
+
+    /** @param { any } newButton */
+
+    set button (newButton){
+        this._button = newButton;
+    }
+
+    /** @param { any } newDisplay */
+
+    set display (newDisplay){
+        this._display = newDisplay;
+    }
+
+    /** @param { any } newArrayValue */
+
+    set arrayValue (newArrayValue){
+        this._arrayValue = newArrayValue;
+    }
+
+    /** @param { any } newInput */
+
+    set input (newInput){
+        this._input = newInput;
+    }
+
+    /** @param { any } newSeparator */
+
+    set separator (newSeparator){
+        this._separator = newSeparator;
+    }
+
+    get button () { return this._button; }
+
+    get display () { return this._display; }
+
+    get arrayValue () { return this._arrayValue; }
+
+    get input () { return this._input; }
+
+    get separator () { return this._separator; }
+
+    // get items (){
+    //     return this._items;
+    // }
+
+    printTable () {
+        this._display.empty();
+
+        let cont = 1;
+
+        const items = (this.arrayValue.val()).split(this._separator);
+        items.forEach( item => {
+            this._display.append(`
+                <tr class="item" data-id="${cont}" data-item="${item}">
+                    <td>${cont}</td>
+                    <td>${item}</td>
+                </tr>
+            `);
+            cont++;
         });
-        //Se actualiza el valor del input hidden
-        arrayValue.val(newItems);
-    }else{
-        display.empty();
-        arrayValue.val("");
     }
-};
 
-const addNewItem = (input,array,disp = null) => {
-    /*
-        @param input , texto de los objetos introducidos.
-        @param array , id jquery del input hidden donde se almacenara la 
-        lista a enviar de objetos en la caja.
-        @param disp , id de la div donde se imprimiran los datos añadidos.
-    */
-    const objetos = input.split(separador);//valor del input donde se introducen objetos
+    deleteItem (id){
+        let items = (this.arrayValue.val()).split(this._separator);
+        items.splice(id, 1);//borrando el elemento indicado
+        if(items.length > 0){
+            //si aun quedan elementos, se reconstruye la tabla con los elementos que quedan
+            const newItems = items.reduce( (tapon,current,index) =>{
+                return tapon += index == 0 ? current : this._separator + current;
+            });
+            //Se actualiza el valor del input hidden
+            this._arrayValue.val(newItems);
 
-    if(objetos.length > 0){
-
-        for(let i = 0; i < objetos.length; i++){
-            let insert = array.val() == "" ? objetos[i] : separador + objetos[i];
-                insert = array.val() + insert;
-            array.val(insert);
-
-            if(disp != null){
-
-                let num_objetos = insert.split(separador).length;
-                
-                disp.append(`
-                    <tr class="item" data-item="${objetos[i]}" data-id="${num_objetos}">
-                        <td>${num_objetos}</td>
-                        <td>${objetos[i]}</td>
-                    </tr>
-                `);
-            }
+            this.printTable();
+        }else{
+            this._display.empty();
+            this._arrayValue.val("");
         }
-
-    }else{
-        //por si añade un campo vacio
-        console.log("El campo esta vacio");
     }
-};
 
-button.on("click", function (){
-    addNewItem(entrada.val(), arrayValue, display);
-    entrada.val("");
-    entrada.focus();
-});
+    addNewItem (items = null){
 
-display.on("click", ".item", function(){
-    //item agrgado
-    const text = this.dataset.item;
+        let objetos = items != null ? items.split(this._separator) : (this._input.val()).split(this._separator);//valor del input donde se introducen objetos
 
-    let conf = confirm("Quieres borrar \"" + text + "\" de tu lista?");
+        if(objetos.length > 0 && (objetos[0] != "" || (objetos[1] && objetos[1] != ""))){
 
-    if(conf){
-        const id = parseInt(this.dataset.id) -1;
-        console.log(`Borrando ${id}`);
-        borrarItem(id);
+            for(let i = 0; i < objetos.length; i++){
+                let insert = this._arrayValue.val() == "" ? objetos[i] : this._separator + objetos[i];
+                    insert = this._arrayValue.val() + insert;
+                
+                this._arrayValue.val(insert);
+
+                let fil = objetos[i].replace(/\(/gmi, '<mark class="subrrallar">');
+                fil = fil.replace(/\)/gmi, '</mark>');
+
+                if(this._display != null){
+
+                    const num_objetos = insert.split(this._separator).length;
+                    
+                    this._display.append(`
+                        <tr class="item" data-item="${objetos[i]}" data-id="${num_objetos}">
+                            <td>${num_objetos}</td>
+                            <td>${fil}</td>
+                        </tr>
+                    `);
+                }
+            }
+        }else{
+            //por si añade un campo vacio
+            console.log("El campo esta vacio");
+        }
     }
-});
+
+    click(){
+        if( this._input.val() != null && this._input.val() != ""){
+            this.addNewItem( this._input.val() );
+            this._input.val("");
+            this._input.focus();
+        }
+    }
+}

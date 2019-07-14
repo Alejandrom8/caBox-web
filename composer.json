@@ -1,0 +1,19 @@
+{
+    "name": "alejandrom8/cabox",
+    "description": "A program that helps people to have a great move",
+    "authors": [
+        {
+            "name": "Alejandro Gómez García",
+            "email": "ale.wild.ones@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4":{
+            "Cabox\\":"app/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    }
+}

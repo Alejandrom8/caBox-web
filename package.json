@@ -1,0 +1,14 @@
+{
+  "name": "mudanza",
+  "version": "1.0.0",
+  "description": "A program that helps people to have a great move.",
+  "main": "init.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alejandro Gómez García <ale.wild.ones@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "chart": "^0.1.2"
+  }
+}

@@ -76,5 +76,3 @@ class Api extends Controller{
         }
     }
 }
-
-?>

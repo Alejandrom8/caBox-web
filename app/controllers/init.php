@@ -18,8 +18,8 @@ class Init extends Controller{
   }
 
   public function error($message){
-    $this->logErrors = $message;
-    $this->view->render("app/error");
+      include_once "debug.php";
+      $render = new Debug($message);
   }
 
   public function registrarCaja(){

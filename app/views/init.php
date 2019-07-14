@@ -9,7 +9,7 @@
     <div class="webpage row" style="padding-bottom:5%;">
         <header class="col-md-12">
             <div>
-                <h1>CucaBox</h1>
+                <h1>CaBox</h1>
                 <img src="<?php echo constant("URL"); ?>resources/img/logo.png">
             </div>
         </header>
@@ -166,298 +166,307 @@
             </div>
         </div>
     </div>
-    <script>
-        let usuarios = ["JARU","MOM","YUNI","ALEX","DANI","MIGUE","LASKA"];
-        let URL = "<?php echo constant("URL");?>";
-    </script>
-    <script>
-        const button = $("#ObjectAdded");
-        const arrayValue = $("#obj");//array escondido que contiene los objetos enlistados
-        const display = $("#boxContent");//display de la caja
-
-        const separador = ",";
-        const entrada = $("#add");
-        const resultados = $("#displayResults");
-        const arrayPrint = $("#cajas");
-    </script>
     <script src="<?php echo constant("URL");?>resources/js/init.js"></script>
     <script>
-        let totalCajas = 0, totalObjetos = 0;
-        const addResultStatistic = async user => {
-            await $.ajax({
-                url: `${URL}init/countBoxes`,
-                data: {user: user},
-                type: "POST",
-                dataType: "JSON",
-                success: function (res){
-                    if(res.success.cajas && res.success.objetos){
+        let usuarios = ["JARU","MOM","YUNI","ALEX","DANI","MIGUE","LASKA"];
+        const URL = "<?php echo constant("URL");?>";
+    </script>
+    <script>
 
-                        let tabla = `<tr>
-                                    <td>${user.toLowerCase()}</td>
-                                    <td>${res.data.cajas}</td>
-                                    <td>${res.data.objetos}</td>
+    const resultados = $("#displayResults");
+    const arrayPrint = $("#cajas");//id de cajas que se van a imprimir
+
+    const button = $("#ObjectAdded");
+    const display = $("#boxContent");//display de la caja
+    const arrayValue = $("#obj");//array escondido que contiene los objetos enlistados
+    const entrada = $("#add");
+
+    if (performance.navigation.type == 1) {
+        arrayValue.val("");
+        arrayPrint.val("");
+    }
+
+    const magicBox = new MagicBox(button, display, arrayValue, entrada);
+
+    button.on("click", function (){ magicBox.click(); });
+
+    display.on("click", ".item", function(){
+        //posible error al tratar de usar this dentro de este contexto :'(
+        const text = this.dataset.item;
+        const conf = confirm("Quieres borrar \"" + text + "\" de tu lista?");
+
+        if(conf){
+            const id = parseInt(this.dataset.id) - 1;
+            magicBox.deleteItem(id);//should be 'this' of the object MagicBox
+        }
+    });
+
+    let totalCajas = 0, totalObjetos = 0;
+    
+    const addResultStatistic = async user => {
+        await $.ajax({
+            url: `${URL}init/countBoxes`,
+            data: { user : user },
+            type: "POST",
+            dataType: "JSON",
+            success: function (res){
+                if(res.success.cajas && res.success.objetos){
+
+                    totalCajas += res.data.cajas;
+                    totalObjetos += res.data.objetos;
+
+                    let tabla = `<tr>
+                                    <td>${ user.toLowerCase() }</td>
+                                    <td>${ res.data.cajas }</td>
+                                    <td>${ res.data.objetos }</td>
                                 </tr>`;
 
-                        $("#Estadisticas").append(tabla);
-                        totalCajas += res.data.cajas;
-                        totalObjetos += res.data.objetos;
+                    $("#Estadisticas").append(tabla);
 
-                    }else{
-                        console.log(res.errors.cajas);
-                        console.log(res.errors.objetos);
-                    }
-                },
-                error: function (){
-                    console.log("Error al cargar datos estadisticos");
+                }else{
+                    console.log(res.errors.cajas);
+                    console.log(res.errors.objetos);
                 }
-            });
-        };
-
-        const loadStatistics = async () => {
-            for(let i = 0; i < usuarios.length; i++){
-                await addResultStatistic(usuarios[i]);
-            }  
-        }
-
-        $(document).ready(function(){
-            loadStatistics().then( () =>{
-                let tabla = `<tr class="bg-warning">
-                            <td>total</td>
-                            <td>${totalCajas}</td>
-                            <td>${totalObjetos}</td>
-                        </tr>`;
-
-                $("#Estadisticas").append(tabla);
-            });
+            },
+            error: function (){
+                console.log("Error al cargar datos estadisticos");
+            }
         });
+    };
 
-        if (performance.navigation.type == 1) {
-            arrayValue.val("");
-            arrayPrint.val("");
-        }
+    const loadStatistics = async () => {
+        for(let i = 0; i < usuarios.length; i++){
+            await addResultStatistic(usuarios[i]);
+        }  
+    }
 
-        const show = id => {
-            $(".bloque").css("display", "none");
-            $("#" + id).css("display", "block");
-        };
-        
-        const nav = document.querySelectorAll(".nav-item");
-        nav.forEach( item => {
-            item.addEventListener("click", function(){
-                const id = this.dataset.show;
-                show(id);
-                $(".nav-link").removeClass("active");
-                $(this).children().addClass("active");
-            });
+    $(document).ready(function(){
+        loadStatistics().then( () =>{
+            let tabla = `<tr class="bg-warning">
+                        <td>total</td>
+                        <td>${totalCajas}</td>
+                        <td>${totalObjetos}</td>
+                    </tr>`;
+
+            $("#Estadisticas").append(tabla);
         });
+    });
 
-        const removerBlur = () => {
-            $(".windowFloatBlur").remove();
-        };
+    const show = id => {
+        $(".bloque").css("display", "none");
+        $("#" + id).css("display", "block");
+    };
+    
+    const nav = document.querySelectorAll(".nav-item");
+    nav.forEach( item => {
+        item.addEventListener("click", function(){
+            show(this.dataset.show);
+            $(".nav-link").removeClass("active");
+            $(this).children().addClass("active");
+        });
+    });
 
-        const addToSelection = (i, owner, title, id) => {
-            if(!$("#Seleccionado").html()){
-                $("#Seleccionado").append(`
-                    <div class="window col-md-12" id="selectWindow" style="max-height:70vh;">
-                        <button id="deleatSelection" 
-                        class="btn btn-danger btn-sm" 
-                        onclick="$('#Seleccionado').empty();$('#selection').val('');" style="margin:4px;">x</button>
-                        <div class="margin" style="margin:0;padding:0;">
-                            <h4>Cajas Seleccionadas</h4>
-                            <div class="table-responsive displaySelection">
-                                <table class="table table-bordered table-striped" id="displaySelection"></table>
-                            </div>
-                            <button class="btn btn-secondary" id="deleatALotOfBoxes">Borrar cajas</button>
-                            <input type="hidden" name="selection" id="selection">
+    const removerBlur = () => {
+        $(".windowFloatBlur").remove();
+    };
+
+    const addToSelection = (i, owner, title, id) => {
+        if(!$("#Seleccionado").html()){
+            $("#Seleccionado").append(`
+                <div class="window col-md-12" id="selectWindow" style="max-height:70vh;">
+                    <button id="deleatSelection" 
+                    class="btn btn-danger btn-sm" 
+                    onclick="$('#Seleccionado').empty();$('#selection').val('');" style="margin:4px;">x</button>
+                    <div class="margin" style="margin:0;padding:0;">
+                        <h4>Cajas Seleccionadas</h4>
+                        <div class="table-responsive displaySelection">
+                            <table class="table table-bordered table-striped" id="displaySelection"></table>
                         </div>
+                        <button class="btn btn-secondary" id="deleatALotOfBoxes">Borrar cajas</button>
+                        <input type="hidden" name="selection" id="selection">
                     </div>
-                `);
-                $("#selectWindow").focus();
-            }
-            $("#displaySelection").append(`
-                <tr>
-                    <td>${i}.</td>
-                    <td>${owner}</td>
-                    <td>${title}</td>
-                </tr>
+                </div>
             `);
-            addNewItem(id, $("#selection"));
-            removerBlur();
-        };
+            $("#selectWindow").focus();
+        }
+        $("#displaySelection").append(`
+            <tr>
+                <td>${i}.</td>
+                <td>${owner}</td>
+                <td>${title}</td>
+            </tr>
+        `);
+        addNewItem(id, $("#selection"));
+        removerBlur();
+    };
 
-        $("body").on("click", ".caja", function(){
-            const data = this.dataset;
-            let mouseX = event.clientX + document.body.scrollLeft;
-            let mouseY = event.clientY + document.body.scrollTop;
-            let x = 0, y = 0;
-            if(mouseX + 200 > $(window).width()){
-                x = mouseX - 200;
-            }else{
-                x = mouseX;
-            }
-            if(mouseY + 267 > $(window).height()){
-                y = mouseY - 267;
-            }else{
-                y = mouseY;
-            }
-            
-            $(".webpage").append(`
-                <div class="windowFloatBlur">
-                    <div class="alertOptions window" id="alertOptions" style="top:${y}px;left:${x}px;border-radius:8px;overflow:hidden;">
-                        <div class="margin" style="padding:0;margin:0;">
-                            <div class="card">
-                                <div class="card-header">
-                                    <ul class="list">
-                                        <li class="list-item">Caja: ${data.title}</li>
-                                        <li class="list-item">Dueño: ${data.owner}</li>
-                                        <li class="list-item">id: ${data.id}</li>
-                                    </ul>
-                                </div>
-                                <div class="card-body btn-group-vertical">
-                                    <a class="btn btn-success btn-block" href="${"<?php echo constant("URL"); ?>"}api/caja/${data.id}">Editar</a>
-                                    <button class="btn btn-info btn-block" onclick="addToSelection('${data.index}','${data.owner}','${data.title}','${data.id}');">Seleccionar</button>
-                                    <a class="btn btn-danger btn-block" 
-                                    href="${"<?php echo constant("URL"); ?>"}api/delete/${data.id}"
-                                    onclick="return confirm('Seguro de que quieres eliminar esta caja? ');">
-                                        Borrar
-                                    </a>
-                                </div>
+    $("body").on("click", ".caja", function(){
+        const data = this.dataset;
+        let mouseX = event.clientX + document.body.scrollLeft;
+        let mouseY = event.clientY + document.body.scrollTop;
+        let x = mouseX, y = mouseY;
+
+        if(mouseX + 200 > $(window).width()){
+            x = mouseX - 200;
+        }
+
+        if(mouseY + 267 > $(window).height()){
+            y = mouseY - 267;
+        }
+        
+        $(".webpage").append(`
+            <div class="windowFloatBlur">
+                <div class="alertOptions window" id="alertOptions" style="top:${y}px;left:${x}px;border-radius:8px;overflow:hidden;">
+                    <div class="margin" style="padding:0;margin:0;">
+                        <div class="card">
+                            <div class="card-header">
+                                <ul class="list">
+                                    <li class="list-item">Caja: ${data.title}</li>
+                                    <li class="list-item">Dueño: ${data.owner}</li>
+                                    <li class="list-item">id: ${data.id}</li>
+                                </ul>
+                            </div>
+                            <div class="card-body btn-group-vertical">
+                                <a class="btn btn-success btn-block" href="${"<?php echo constant("URL"); ?>"}api/caja/${data.id}">Editar</a>
+                                <button class="btn btn-info btn-block" onclick="addToSelection('${data.index}','${data.owner}','${data.title}','${data.id}');">Seleccionar</button>
+                                <a class="btn btn-danger btn-block" 
+                                href="${"<?php echo constant("URL"); ?>"}api/delete/${data.id}"
+                                onclick="return confirm('Seguro de que quieres eliminar esta caja? ');">
+                                    Borrar
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-            `);
+            </div>
+        `);
 
-            $("#deleatALotOfBoxes").on("click", function(){
-                if(confirm("Esta seguro de que desea borrar todas estas cajas?")){
-                    window.location = `${URL}api/delete/` + $("#selection").val();
-                }
-            });
-
-            $(document).mouseup(function(e) {
-                let container = $(".alertOptions");
-                // if the target of the click isn't the container nor a descendant of the container
-                if (!container.is(e.target) && container.has(e.target).length === 0) {
-                    removerBlur();
-                }
-            });
-
-            $("#cancelar").on("click", function(){
-                removerBlur();
-            });
-
-            return false;
+        $("#deleatALotOfBoxes").on("click", function(){
+            if(confirm("Esta seguro de que desea borrar todas estas cajas?")){
+                window.location = `${URL}api/delete/` + $("#selection").val();
+            }
         });
 
-        show("create");
+        $(document).mouseup(function(e) {
+            let container = $(".alertOptions");
+            // if the target of the click isn't the container or a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                removerBlur();
+            }
+        });
 
-        const recortar = (txt, comp) => {
-            let textoManejado = txt.reduce((acumulator, current, index) => {
-                acumulator += index == 0 ? current : "," + current;
-                return acumulator;
-            });
-            textoManejado += "...";
-            return textoManejado;
-        }
+        $("#cancelar").on("click", function(){
+            removerBlur();
+        });
 
-        $("#B").on("submit", function(e){
-            e.preventDefault();
-            $.ajax({
-                url: $(this).attr("action"),
-                type: "GET",
-                data: $(this).serialize(),
-                dataType: "JSON",
-                beforeSend: function(){
-                    $("#mostrar").val("cargando...");
-                    $("#mostrar").attr("disabled", "disabled");
-                },
-                complete: function(){
-                    $("#mostrar").val("Mostrar");
-                    $("#mostrar").removeAttr("disabled");
-                },
-                success: function (data){
-                    console.log(data);
-                    resultados.empty();
+        return false;
+    });
 
-                    if(data.success){
-                        let toPrint = `
-                            <table class="table table-bordered table-hover table-lg">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Propietario</th>
-                                        <th>Caja</th>
-                                        <th>Objetos</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                        `;
+    const recortar = (txt, comp) => {
+        let textoManejado = txt.reduce((acumulator, current, index) => {
+            acumulator += index == 0 ? current : "," + current;
+            return acumulator;
+        });
+        textoManejado += "...";
+        return textoManejado;
+    }
 
-                        let idTotales = "";
+    $("#B").on("submit", function(e){
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr("action"),
+            type: "GET",
+            data: $(this).serialize(),
+            dataType: "JSON",
+            beforeSend: function(){
+                $("#mostrar").val("cargando...");
+                $("#mostrar").attr("disabled", "disabled");
+            },
+            complete: function(){
+                $("#mostrar").val("Mostrar");
+                $("#mostrar").removeAttr("disabled");
+            },
+            success: function (data){
+                console.log(data);
+                resultados.empty();
 
-                        for(let i = 0; i < Object.keys(data.data).length; i++){
-
-                            let textoManejado = data.data[i].content.split(',').slice(0,3);
-                            textoManejado = recortar(textoManejado, this.texto);
-
-                            idTotales += i == 0 ? data.data[i].id : "," + data.data[i].id;
-
-                            toPrint += `
-                                <tr class="caja" data-id="${data.data[i].id}" 
-                                data-title="${data.data[i].title}" data-owner="${data.data[i].owner}"
-                                data-index="${i+1}">
-                                    <td>${i+1}.</td>
-                                    <td>${data.data[i].owner}</td>
-                                    <td>${data.data[i].title}</td>
-                                    <td title="${data.data[i].content}">${textoManejado}</td>
+                if(data.success){
+                    let toPrint = `
+                        <table class="table table-bordered table-hover table-lg">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Propietario</th>
+                                    <th>Caja</th>
+                                    <th>Objetos</th>
                                 </tr>
-                            `;
-                        }
+                            </thead>
+                            <tbody>
+                    `;
+
+                    let idTotales = "";
+
+                    for(let i = 0; i < Object.keys(data.data).length; i++){
+
+                        let textoManejado = data.data[i].content.split(',').slice(0,3);
+                        textoManejado = recortar(textoManejado, this.texto);
+
+                        idTotales += i == 0 ? data.data[i].id : "," + data.data[i].id;
 
                         toPrint += `
-                                </tbody>
-                            </table>
+                            <tr class="caja" data-id="${data.data[i].id}" 
+                            data-title="${data.data[i].title}" data-owner="${data.data[i].owner}"
+                            data-index="${i+1}">
+                                <td>${i+1}.</td>
+                                <td>${data.data[i].owner}</td>
+                                <td>${data.data[i].title}</td>
+                                <td title="${data.data[i].content}">${textoManejado}</td>
+                            </tr>
                         `;
-
-                        arrayPrint.val(idTotales);
-                        resultados.append(toPrint);
-
-                    }else{
-                        resultados.append(`<p>${data.messages}</p>`);
                     }
-                },
-                error: function (){
-                    console.log("error al cargar los resultados de la busqueda");
-                }
-            });
-            return false;
-        });
 
-        const sendToPrintViewBoxes = () =>{
-            let allid = arrayPrint.val();
-            if(allid != "" && allid != null){
-                 // if(navigator.offline){
-                //     alert("En este momento no tiene conexión a internet la cual es necesaria para efetcuar esta acción");
-                // }else{
-                    window.open(URL + "init/print/" + allid);
-                // }
-            }else{
-                alert("No hay cajas en pantalla, realize una busqueda primero");
-            }
-        };
+                    toPrint += `
+                            </tbody>
+                        </table>
+                    `;
 
-        const sendToPrintSelectedBoxes = () => {
-            if($("#selection").length){
-                let allid = $("#selection").val();
-                if(allid != "" && allid != null){
-                    window.open(URL + "init/print/" + allid);
+                    arrayPrint.val(idTotales);
+                    resultados.append(toPrint);
+
                 }else{
-                    alert("No ha seleccionado ninguna caja aún");
+                    resultados.append(`<p>${data.messages}</p>`);
                 }
+            },
+            error: function (){
+                console.log("error al cargar los resultados de la busqueda");
+            }
+        });
+        return false;
+    });
+
+    const sendToPrintViewBoxes = () =>{
+        let allid = arrayPrint.val();
+        if(allid != "" && allid != null){
+                window.open(URL + "init/print/" + allid);
+        }else{
+            alert("No hay cajas en pantalla, realize una busqueda primero");
+        }
+    };
+
+    const sendToPrintSelectedBoxes = () => {
+        if($("#selection").length){
+            let allid = $("#selection").val();
+            if(allid != "" && allid != null){
+                window.open(URL + "init/print/" + allid);
             }else{
                 alert("No ha seleccionado ninguna caja aún");
             }
-        };
+        }else{
+            alert("No ha seleccionado ninguna caja aún");
+        }
+    };
+
+    show("create");
 
     </script>
 </body>
