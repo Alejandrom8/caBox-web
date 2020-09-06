@@ -4,6 +4,7 @@
   );
 
   //se especifica la configuracion 
+  define("APPNAME", $config->APPNAME);
   define("URL", $config->URL);
 
   define("USER", $config->WEBHOST->USER);

@@ -9,7 +9,7 @@
     <div class="webpage row" style="padding-bottom:5%;">
         <header class="col-md-12">
             <div>
-                <h1>CaBox</h1>
+                <h1><?= constant("APPNAME") ?></h1>
                 <img src="<?php echo constant("URL"); ?>resources/img/logo.png">
             </div>
         </header>
@@ -166,10 +166,10 @@
             </div>
         </div>
     </div>
-    <script src="<?php echo constant("URL");?>resources/js/init.js"></script>
+    <script src="<?= constant("URL") ?>resources/js/init.js"></script>
     <script>
         let usuarios = ["JARU","MOM","YUNI","ALEX","DANI","MIGUE","LASKA"];
-        const URL = "<?php echo constant("URL");?>";
+        const URL = "<?= constant("URL") ?>";
     </script>
     <script>
 
@@ -187,19 +187,6 @@
     }
 
     const magicBox = new MagicBox(button, display, arrayValue, entrada);
-
-    button.on("click", function (){ magicBox.click(); });
-
-    display.on("click", ".item", function(){
-        //posible error al tratar de usar this dentro de este contexto :'(
-        const text = this.dataset.item;
-        const conf = confirm("Quieres borrar \"" + text + "\" de tu lista?");
-
-        if(conf){
-            const id = parseInt(this.dataset.id) - 1;
-            magicBox.deleteItem(id);//should be 'this' of the object MagicBox
-        }
-    });
 
     let totalCajas = 0, totalObjetos = 0;
     
@@ -276,7 +263,8 @@
                 <div class="window col-md-12" id="selectWindow" style="max-height:70vh;">
                     <button id="deleatSelection" 
                     class="btn btn-danger btn-sm" 
-                    onclick="$('#Seleccionado').empty();$('#selection').val('');" style="margin:4px;">x</button>
+                    onclick="$('#Seleccionado').empty();$('#selection').val('');"
+                    style="margin:4px;">x</button>
                     <div class="margin" style="margin:0;padding:0;">
                         <h4>Cajas Seleccionadas</h4>
                         <div class="table-responsive displaySelection">
@@ -327,10 +315,10 @@
                                 </ul>
                             </div>
                             <div class="card-body btn-group-vertical">
-                                <a class="btn btn-success btn-block" href="${"<?php echo constant("URL"); ?>"}api/caja/${data.id}">Editar</a>
+                                <a class="btn btn-success btn-block" href="${"<?= constant("URL") ?>"}api/caja/${data.id}">Editar</a>
                                 <button class="btn btn-info btn-block" onclick="addToSelection('${data.index}','${data.owner}','${data.title}','${data.id}');">Seleccionar</button>
                                 <a class="btn btn-danger btn-block" 
-                                href="${"<?php echo constant("URL"); ?>"}api/delete/${data.id}"
+                                href="${"<?= constant("URL") ?>"}api/delete/${data.id}"
                                 onclick="return confirm('Seguro de que quieres eliminar esta caja? ');">
                                     Borrar
                                 </a>
@@ -467,7 +455,6 @@
     };
 
     show("create");
-
     </script>
 </body>
 </html>

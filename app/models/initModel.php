@@ -32,6 +32,7 @@ class initModel extends Model{
     public function consulta($usuario, $palabras){
 
         $res = new ServiceResult();
+        
         try{
 
             $sql = "SELECT * FROM cajas";

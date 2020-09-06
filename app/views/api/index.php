@@ -55,10 +55,10 @@
 </head>
 <body>
     <header class="col-md-12">
-            <div>
-                <h1>CucaBox</h1>
-                <img src="<?php echo constant("URL"); ?>resources/img/logo.png">
-            </div>
+        <div>
+            <h1><?= constant("APPNAME") ?></h1>
+            <img src="<?php echo constant("URL"); ?>resources/img/logo.png">
+        </div>
     </header>
     <div id="display">
         <?php 
@@ -161,7 +161,7 @@
                     </div>
                 </div>
             </div>
-    <script src="<?php echo constant("URL");?>resources/js/init.js"></script>
+    <script src="<?= constant("URL") ?>resources/js/init.js"></script>
     <script>
         const button = $("#ObjectAdded");
         const arrayValue = $("#obj");//array escondido que contiene los objetos enlistados
@@ -179,21 +179,8 @@
             arrayValue.val(items);
         }
 
-        button.on("click", function (){ magicBox.click(); });
-
-        display.on("click", ".item", function(){
-            //posible error al tratar de usar this dentro de este contexto :'(
-            const text = this.dataset.item;
-            const conf = confirm("Quieres borrar \"" + text + "\" de tu lista?");
-
-            if(conf){
-                const id = parseInt(this.dataset.id) - 1;
-                magicBox.deleteItem(id);//should be 'this' of the object MagicBox
-            }
-        });
-
         $("#delete").on("click", function(){
-            if(confirm("Seguro de que quieres borrar esta caja?")){
+            if(confirm("¿Estas seguro de que quieres borrar esta caja?")){
                 window.location = "<?php echo constant("URL") . "api/delete/" . $this->box->id; ?>";
             }
         });
